@@ -1,0 +1,39 @@
+mysql> create table areas(radius int,area float); Query OK, 0 rows affected (0.47 
+sec) mysql> create table circle(radius int, area float,dimeter int,circumference 
+float);
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS circle //
+
+CREATE PROCEDURE circle()
+BEGIN
+    DECLARE radius INT DEFAULT 5;
+    DECLARE dimeter INT;
+    DECLARE area FLOAT;
+    DECLARE circumference FLOAT;
+    DECLARE pi FLOAT DEFAULT 3.14;
+
+    cloop: LOOP
+        SET dimeter = 2 * radius;
+        SET area = pi * radius * radius;
+        SET circumference = 2 * pi * radius;
+
+        INSERT INTO circle (radius, dimeter, area, circumference)
+        VALUES (radius, dimeter, area, circumference);
+
+        SET radius = radius + 1;
+        IF radius > 9 THEN
+            LEAVE cloop;
+        END IF;
+    END LOOP cloop;
+END //
+
+DELIMITER ;
+
+
+call circle();
+
+desc circle();
+
+select*from circle();
