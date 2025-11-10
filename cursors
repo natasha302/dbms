@@ -1,0 +1,71 @@
+mysql> CREATE TABLE IF NOT EXISTS O_RollCall (  ->  ->  -> );  
+rollno INT PRIMARY KEY,  
+name VARCHAR(50)  
+Query OK, 0 rows affected (0.48 sec) mysql> 
+CREATE TABLE IF NOT EXISTS N_RollCall (  ->  ->  -> );  
+rollno INT PRIMARY KEY,  
+name VARCHAR(50)  
+Query OK, 0 rows affected (0.44 sec)  
+mysql> INSERT INTO O_RollCall (rollno, name) VALUES  -> (1, 'Riya'), -> 
+(2, 'Piya'),  -> (3, 'Siya'),  -> (4, 'kiya');  
+Query OK, 4 rows affected (0.15 sec) Records: 
+4 Duplicates: 0 Warnings: 0  
+mysql> INSERT INTO N_RollCall (rollno, name) VALUES  -> (2, 'Piya');  
+Query OK, 1 row affected (0.06 sec) 
+mysql> select* from O_RollCall;  
++  
++  
++  
+ 
+| rollno | name |  
+ +  +  +  
+| 1 | Riya | | 2 | 
+Piya | | 3 | Siya |  
+ |  4 | kiya |  
+ +  +  +  
+4 rows in set (0.00 sec) mysql> 
+select* from N_RollCall;  
+ +  +  +  
+| rollno | name |  
+ +  +  +  
+ |  2 | Piya |  
+ +  +  +  
+1 row in set (0.00 sec) 
+
+drop procedure if exists mycursor1;
+
+delimiter //
+
+CREATE PROCEDURE mycursor1()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE  c_rollno int;
+    DECLARE  c_name char(20);
+
+    DECLARE  c_studentN CURSOR  for SELECT rollno,name FROM O_RollCall where rollno not in(select rollno from N_RollCall);
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    BEGIN
+        OPEN c_studentN;
+           read_loop:LOOP
+               FETCH c_studentN into c_rollno, c_name;  
+   
+               IF done = 1 THEN
+                  LEAVE read_loop;
+               END IF;          
+   
+              insert into N_RollCall(rollno,name) values(c_rollno, c_name);
+
+           END LOOP;
+           CLOSE c_studentN;
+    END;
+END;
+
+//
+
+delimiter ;
+
+CALL mycursor1();
+
+SELECT *FROM N_RollCall; 
