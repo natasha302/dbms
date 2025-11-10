@@ -1,0 +1,108 @@
+ create table Borrower(Roll_no int primary key, Name varchar(20), DOI date, NameofBook 
+varchar(255), Status char(1)); Query OK, 0 rows affected (0.31 sec) mysql> create table 
+Fine(Roll_no int, sDate date, Amt int); Query OK, 0 rows affected (0.27 sec) mysql> desc Borrower;  
++  
+| Field  
++  
+| Roll_no  | int(11)  
+| Name  
+| DOI  
++  +  +  +  +  +  
+| Type  
+| Null | Key | Default | Extra |  
++  +  +  +  +  +  
+| NO  | PRI | NULL  |  
+| varchar(20) | YES |  
+| date  
+| YES |  
+| NULL  |  
+| NULL  |  
+|  
+|  
+|  
+| NameofBook | varchar(255) | YES |  | NULL  |  
+| Status  
++  
+| char(1)  
+| YES |  
+| NULL  |  
+|  
++  +  +  +  +  +  
+|  
+5 rows in set (0.01 sec)  
+mysql> insert into Borrower(Roll_no,Name,DOI,NameofBook,Status) values(1,'Ritu','2025-05- 
+21','DBMS','I'),(2,'Gauri','2025-06-15','TOC','I'),(3,'Urvi','2025-07-13','SPM','I');  
+
+
+
+drop procedure if exists p_fine;
+
+    delimiter //
+
+    create procedure p_fine(IN rno int,IN  bname varchar(20))
+    begin
+       declare d1 date;    
+       declare daycnt int;
+       declare fine_amt int;
+   
+        SELECT DOI  into d1 FROM Borrower  WHERE Roll_no = rno and  NameofBook  = bname;
+     
+        select DATEDIFF(now(),d1) into daycnt;
+       
+         if(daycnt >= 15 and daycnt <= 30) then
+         
+               set fine_amt := daycnt * 5;
+           
+                 insert into Fine(Roll_no,sDate,Amt) values (rno,now(),fine_amt);
+                                                   
+                 update Borrower set status = 'R' where Roll_no = rno;
+                 
+       ELSEIF(daycnt > 30) then
+       
+                set fine_amt := daycnt * 50;
+           
+                 insert into Fine(Roll_no,sDate,Amt) values (rno,now(),fine_amt);
+                                                   
+                 update Borrower set status = 'R' where Roll_no = rno;
+                 
+         else       
+                          update Borrower set status = 'R' where Roll_no = rno;               
+         end if;    
+     end;
+//
+
+delimiter ;
+
+
+ select*from Borrower;  
+ +  +  +  +  +  +  
+ | Roll_no | Name | DOI  | NameofBook | Status |  
+ +  +  +  +  +  +  
+ |  1 | Ritu | 2025-05-21 | DBMS  | I  |  
+ |  2 | Gauri | 2025-06-15 | TOC  | I  |  
+ |  3 | Urvi | 2025-07-13 | SPM  | I  |  
+ +  +  +  +  +  +  
+3 rows in set (0.00 sec) mysql> 
+select*from Fine; Empty set (0.00 
+sec) mysql> call p_Fine(1,'DBMS'); 
+Query OK, 1 row affected (0.09 sec) 
+mysql> select*from Fine;  
+ + +  +  +  
+ | Roll_no | sDate  | Amt |  
+ + +  +  +  
+ |  1 | 2025-07-31 | 3550 |  
+ + +  +  +  
+1 row in set (0.00 sec) mysql> call 
+p_Fine(2,'TOC'); Query OK, 1 row 
+affected (0.12 sec) mysql> call 
+p_Fine(3,'SPM'); Query OK, 1 row 
+ 
+affected (0.08 sec) mysql> 
+select*from Fine;  
+ + +  +  +  
+ | Roll_no | sDate  | Amt |  
+ + +  +  +  
+ |  1 | 2025-07-31 | 3550 |  
+ |  2 | 2025-07-31 | 2300 |  
+ |  3 | 2025-07-31 | 90 |  
+ + +  +  +  
