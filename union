@@ -1,0 +1,192 @@
+mysql> use TEB28; Database 
+changed  
+mysql> create table Customer(Account_no int(10),Name varchar(20),Balance int(10),City 
+varchar(10));  
+Query OK, 0 rows affected (0.28 sec) mysql> 
+desc Customer;  
+ +  +  +  +  +  +  +  
+ | Field  | Type  | Null | Key | Default | Extra |  
+ +  +  +  +  +  +  +  
+ | Account_no | int(10)  | YES |  | NULL  |  |  
+ | Name  | varchar(20) | YES |  | NULL  |  |  
+ | Balance  | int(10)  | YES |  | NULL  |  |  
+ | City  | varchar(10) | YES |  | NULL  |  |  
+ +  +  +  +  +  +  +  
+4 rows in set (0.01 sec)  
+  
+  
+mysql> insert into Customer(Account_no,Name,Balance,City)  
+values(1,'Ram',10000,'Pune'),(2,'Ravi',25000,'Nasik'),(3,'Sachin',30000,'Mumbai');  
+Query OK, 3 rows affected (0.06 sec) Records: 3 Duplicates: 0 Warnings: 0 mysql> 
+create table Loan(Loan_no int(10),Name varchar(20),Loan_Amount int(20)); Query 
+OK, 0 rows affected (0.26 sec)  
+mysql> insert into Loan(Loan_no,Name,Loan_Amount) 
+values(1,'Ram',10000),(2,'Ravi',50000),(4,'Dipak',40000);  
+Query OK, 3 rows affected (0.04 sec)  
+Records: 3 Duplicates: 0 Warnings: 0  
+ 
+mysql> desc Loan;  
+ + +  +  +  +  +  +  
+ | Field  | Type  | Null | Key | Default | Extra |  
+ + +  +  +  +  +  +  
+ | Loan_no  | int(10)  | YES |  | NULL  |  |  
+ | Name  | varchar(20) | YES |  | NULL  |  |  
+ | Loan_Amount | int(20)  | YES |  | NULL  |  |  
+ + +  +  +  +  +  +  
+3 rows in set (0.00 sec)  
+  
+  
+mysql> select*from Customer;  
+ +  +  +  +  +  
+| Account_no | Name | Balance | City |  
+ +  +  +  +  +  
+ |  1 | Ram  | 10000 | Pune |  
+ |  2 | Ravi | 25000 | Nasik |  
+ |  3 | Sachin | 30000 | Mumbai |  
+ +  +  +  +  +  
+3 rows in set (0.00 sec) mysql> 
+select*from Loan;  
+ +  +  +  +  
+| Loan_no | Name | Loan_Amount |  
+ +  +  +  +  
+ |  1 | Ram |  10000 |  
+ |  2 | Ravi |  50000 |  
+ |  4 | Dipak |  40000 |  
+ +  +  +  +  
+3 rows in set (0.00 sec) mysql> (select Name from Customer) union 
+(select Name from Loan);  
+ + +  
+| Name |  
++ 
++  
+| Ram  |  
+| Ravi |  
+| Sachin |  
+| Dipak |  
++ 
++  
+4 rows in set (0.00 sec) mysql> select Name from Customer where 
+Name in (select Name from Loan);  
++ 
++  
+| Name |  
++ 
++  
+| Ram |  
+| Ravi |  
++ 
++  
+2 rows in set (0.03 sec) mysql> select Name from Customer where Name not in 
+(select Name from Loan);  
++ 
++  
+| Name |  
++ 
++  
+| Sachin |  
++ 
++  
+1 row in set (0.00 
+sec) mysql> create 
+view high_balance as  -> select*from Customer  -> where Balance>20000; Query 
+OK, 0 rows affected (0.04 sec) 
+mysql> select* from high_balance;  
++  
++  
++  
++  
++  
+ 
+| Account_no | Name | Balance | City |  
+         +  +  +  +  
+ |  2 | Ravi | 25000 | Nasik |  
+ |  3 | Sachin | 30000 | Mumbai |  
+ +  +  +  +  +  
+1 rows in set (0.00 
+sec) mysql> select* 
+from Customer;  
+ +  +  +  +  +  
+| Account_no | Name | Balance | City |  
+ +  +  +  +  +  
+ |  1 | Ram  | 10000 | Pune |  
+ |  2 | Ravi | 25000 | Nasik |  
+ |  3 | Sachin | 30000 | Mumbai |  
+ +  +  +  +  +  
+2 rows in set (0.00 
+sec) mysql> create 
+view city_bal as  -> select*from Customer where 
+City='Nasik'; Query OK, 0 rows 
+affected (0.03 sec) mysql> 
+select*from city_bal;  
+ +  +  +  +  +  
+| Account_no | Name | Balance | City |  
+ +  +  +  +  +  
+ |  2 | Ravi | 25000 | Nasik |  
+ +  +  +  +  +  
+1 row in set (0.00 
+sec) mysql> 
+select*from city_bal  
+ -> where Balance>20000;  
+ +  +  +  +  +  
+| Account_no | Name | Balance | City | 
+ 
++  +  +  +  +  
+ |  2 | Ravi | 25000 | Nasik |  
+ +  +  +  +  
+1 row in set (0.00 sec) mysql> create 
+index myindex on Customer(Name);  
+Query OK, 0 rows affected 
+(0.41 sec) Records: 0 
+Duplicates: 0 Warnings: 0 
+mysql> show index from 
+Customer;  
+ 
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | 
+Cardinality |  
+Sub_part | Packed | Null | Index_type | Comment | Index_comment |  
+ 
+ | Customer |    1 | myindex |  1 | Name  | A  |  3 |  NULL | NULL | 
+YES |  
+ BTREE  |  |   |  
+ +  +  +  +  +  +  +  +  +  + 
+ +  
+ 
+ +  +  +  
+1 row in set (0.00 sec) mysql> create index myindex1 on 
+Customer(Account_no,Name);  
+Query OK, 0 rows affected 
+(0.34 sec) Records: 0 
+Duplicates: 0 Warnings: 0 
++   +   +   +   +   +   +   +   +   +   +   
++   +   +   
++   +   +   +   +   +   +   +   +   +   +   
++   +   +   
+ 
+mysql> show index from 
+Customer;  
+ 
+ +  +  +  
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | 
+Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |  
+ 
+ +  +  +  
+ | Customer |   1 | myindex |  1 | Name  | A  |  3 |  NULL | NULL | YES |  
+ BTREE  |  |  |          
+ | Customer |   1 | myindex1 |  1 | Account_no | A  |  3 |  NULL | 
+NULL | YES  
+ | BTREE  |  |  |            
+ | Customer |   1 | myindex1 |  2 | Name  | A  |  3 |  NULL | NULL | 
+YES |  
+ BTREE  |  |  |            
+ 
+3 rows in set (0.00 sec) mysql> select 
+Loan_no,Name,Loan_Amount,Loan_Amount*0.08*20 as Interest from Loan;  
+ +  +  +  +  +  
+| Loan_no | Name | Loan_Amount | Interest |  
+ +  +  +  +  +  
+|  1 | Ram |  10000 | 
+16000.00 | |  2 | Ravi | 
+ 50000 | 80000.00 |  
+ |  4 | Dipak |  40000 | 64000.00 |  
+ +  +  +  +  +  
+3 rows in set (0.02 sec)
